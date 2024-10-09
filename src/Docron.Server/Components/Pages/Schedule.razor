@@ -1,0 +1,83 @@
+﻿@page "/"
+@using Docron.Server.Domain
+
+<!--suppress ALL -->
+<PageTitle>Schedule</PageTitle>
+
+<h1>Schedule</h1>
+
+<style>
+    .popup {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 40px;
+        width: 100%;
+        height: 60px;
+        margin-top: 17px; /* To compensate for parent block's padding */
+        color: #fff;
+        background: #f00;
+        z-index: 9999999;
+        overflow: visible !important;
+    }
+
+    .item:hover .popup {
+        display: block;
+    }
+
+    fluent-card {
+        contain: none;
+        content-visibility: visible;
+    }
+</style>
+
+<FluentBodyContent>
+    <FluentStack Orientation="Orientation.Vertical"
+                 HorizontalAlignment="HorizontalAlignment.Center"
+                 VerticalAlignment="VerticalAlignment.Center"
+                 VerticalGap="40">
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Horizontal"
+                         HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentSelect TOption="KeyValuePair<string, string>"
+                              Items="@_containers"
+                              Id="containers"
+                              Width="200px"
+                              Height="250px"
+                              Placeholder="Select container"
+                              OptionValue="@(c => c.Key)"
+                              OptionText="@(c => c.Value)"
+                              @bind-Value="@_selectedContainerId"/>
+
+                <FluentSelect TOption="KeyValuePair<JobTypes, string>"
+                              Items="@_jobTypes"
+                              Id="jobTypes"
+                              Width="200px"
+                              Height="250px"
+                              Placeholder="Select type"
+                              OptionValue="@(t => t.Key.ToString())"
+                              OptionText="@(t => t.Value)"
+                              @bind-Value="@_selectedJobType"/>
+
+                <FluentTextField @bind-Value="_cron" Maxlength="20" Placeholder="Enter cron expression, e.g. 0 0 1 * * ?" Style="width: 250px"></FluentTextField>
+
+                <FluentButton Appearance="Appearance.Accent" OnClick="@AddJobAsync">Add Schedule</FluentButton>
+            </FluentStack>
+        </FluentCard>
+        <FluentCard>
+            <FluentDataGrid Items="_scheduleEntriesQueryable"
+                            AutoFit="true"
+                            @ref="_grid">
+                <PropertyColumn Property="@(se => se.Index)" Title="#" Style="padding-top: 10px"></PropertyColumn>
+                <PropertyColumn Property="@(se => se.ContainerName)" Title="Container" Style="padding-top: 10px"></PropertyColumn>
+                <PropertyColumn Property="@(se => se.Description)" Title="Description" Tooltip="true" Style="padding-top: 10px"></PropertyColumn>
+                <PropertyColumn Property="@(se => se.Cron)" Title="Cron" Style="padding-top: 10px"></PropertyColumn>
+                <PropertyColumn Property="@(se => se.NextFireTime)" Title="Next execution" Style="padding-top: 10px"></PropertyColumn>
+                <TemplateColumn Title="Actions" Align="@Align.End">
+                    @* <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@EditAsync" Appearance="Appearance.Accent"/> *@
+                    <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(async _ => await DeleteAsync(context))" Appearance="Appearance.Accent"/>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </FluentCard>
+    </FluentStack>
+</FluentBodyContent>
