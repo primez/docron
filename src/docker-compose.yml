@@ -1,0 +1,11 @@
+﻿services:
+  docron.testconsole:
+    image: docron.testconsole
+    user: root # only for development
+    build:
+      context: .
+      dockerfile: Docron.TestConsole/Dockerfile
+    environment:
+      - Connection=unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

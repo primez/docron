@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  docron.testconsole:
+    build:
+      context: "D:\\Hobbies\\mylabb\\apps\\docron\\src"
+      dockerfile: "Docron.TestConsole/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Docron.TestConsole.dll"
+    environment:
+      DOTNET_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "docron.testconsole:dev"
+    ports: []
+    volumes:
+    - "D:\\Dev\\nuget:/root/.nuget/packages"
+    - "D:\\Hobbies\\mylabb\\apps\\docron\\src\\Docron.TestConsole:/app:rw"
+    - "D:\\Hobbies\\mylabb\\apps\\docron\\src:/src:rw"
+    working_dir: "/app"
