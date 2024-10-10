@@ -67,6 +67,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}  # Push image only if not a PR
           tags: ${{ env.tags }}  # Use generated tags
           labels: ${{ steps.meta.outputs.labels }}
+      	  annotations: '{"org.opencontainers.image.description": "Docron is a scheduling tool designed to automate the start and stop of Docker containers based on user-defined schedules. With a simple interface, it streamlines container management, ensuring that your applications run efficiently and only when needed."}'
           cache-from: type=gha  # Use GitHub Actions cache for faster builds
           cache-to: type=gha,mode=max
 
