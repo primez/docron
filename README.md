@@ -48,6 +48,7 @@ services:
 
 ### Screenshots
 Here are a few screenshots of the UI:
-- ![Screenshot 1](screenshots/1.png)
-- ![Screenshot 2](screenshots/2.png)
-- ![Screenshot 3](screenshots/3.png)
+- ![1](https://github.com/user-attachments/assets/b51ff834-8f64-4ecb-bd0a-2ad0863807fb)
+- ![2](https://github.com/user-attachments/assets/62e9ad64-03d9-454c-a453-c27ebac10c99)
+- ![3](https://github.com/user-attachments/assets/b71591e6-42d1-42b4-9d71-f4a68e450e61)
+
