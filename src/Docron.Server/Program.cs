@@ -23,6 +23,7 @@ builder.Services.AddQuartz(opt =>
     });
     opt.MaxBatchSize = 2;
     opt.InterruptJobsOnShutdown = false;
+    opt.CheckConfiguration = true;
 });
 builder.Services.AddQuartzServer(opt => { opt.AwaitApplicationStarted = true; });
 

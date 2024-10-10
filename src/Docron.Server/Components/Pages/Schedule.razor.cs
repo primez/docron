@@ -1,7 +1,6 @@
 ﻿using Docker.DotNet;
 using Docker.DotNet.Models;
-using Docron.Server.Domain;
-using Docron.Server.Jobs;
+using Docron.Server.Domain.Jobs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Extensions;
@@ -12,20 +11,23 @@ namespace Docron.Server.Components.Pages;
 
 public partial class Schedule
 {
-    private List<ScheduleEntry> _scheduleEntries = [];
+    private Dictionary<string, ScheduleEntry> _scheduleEntries = [];
     private IQueryable<ScheduleEntry> _scheduleEntriesQueryable = default!;
     private FluentDataGrid<ScheduleEntry> _grid = default!;
     private int _index;
-    
-    private Dictionary<string, string> _containers = [];
+
+    private readonly Dictionary<string, string> _containers = [];
     private string _selectedContainerId = default!;
 
     private readonly Dictionary<JobTypes, string> _jobTypes = Enum.GetValues<JobTypes>()
         .Where(jt => jt != JobTypes.None)
         .ToDictionary(jt => jt, jt => jt.GetDisplayName());
+
     private string _selectedJobType = default!;
 
     private string _cron = default!;
+
+    private IScheduler _scheduler = default!;
 
     [Inject] private ISchedulerFactory SchedulerFactory { get; set; } = default!;
 
@@ -35,30 +37,33 @@ public partial class Schedule
 
     protected override async Task OnInitializedAsync()
     {
-        var scheduler = await SchedulerFactory.GetScheduler();
+        _scheduler = await SchedulerFactory.GetScheduler();
 
-        var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
+        var jobKeys = await _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(JobConstants.Group));
 
-        foreach (var key in jobKeys)
+        foreach (var jobKey in jobKeys)
         {
-            var jobDetail = await scheduler.GetJobDetail(key);
-            var triggers = await scheduler.GetTriggersOfJob(key);
+            var jobDetail = await _scheduler.GetJobDetail(jobKey);
+            var triggers = await _scheduler.GetTriggersOfJob(jobKey);
             var firstTrigger = triggers.FirstOrDefault();
 
             var containerName = (string)jobDetail!.JobDataMap[JobConstants.ContainerName];
             var cron = (string)jobDetail.JobDataMap[JobConstants.Cron];
+            var jobType = Enum.Parse<JobTypes>((string)jobDetail.JobDataMap[JobConstants.Type]);
             var nextFireTime = firstTrigger?.GetNextFireTimeUtc().ToLocalTime();
 
-            _scheduleEntries.Add(new ScheduleEntry(
+            _scheduleEntries.Add(jobKey.Name,
+                new ScheduleEntry(
                 ++_index,
-                key,
+                jobKey,
                 containerName,
                 jobDetail.Description!,
                 cron,
+                jobType,
                 nextFireTime));
         }
 
-        _scheduleEntriesQueryable = _scheduleEntries.AsQueryable();
+        _scheduleEntriesQueryable = _scheduleEntries.Values.AsQueryable();
 
         var containers = await DockerClient.Containers.ListContainersAsync(new ContainersListParameters
         {
@@ -68,7 +73,7 @@ public partial class Schedule
 
         foreach (var container in containers)
         {
-           _containers.Add(container.ID, container.Names.First().Remove(0, 1));
+            _containers.Add(container.ID, container.Names.First().Remove(0, 1));
         }
     }
 
@@ -83,7 +88,7 @@ public partial class Schedule
                 opt.Intent = MessageIntent.Warning;
                 opt.Timeout = 5000;
                 opt.Body = "Select a container, type and enter a cron expression";
-                opt.Title = "Validation";
+                opt.Title = "Validation:";
                 opt.Section = "MESSAGES_TOP";
             });
             return;
@@ -102,32 +107,22 @@ public partial class Schedule
                 opt.Intent = MessageIntent.Warning;
                 opt.Timeout = 5000;
                 opt.Body = e.Message;
-                opt.Title = "Validation";
+                opt.Title = "Validation:";
                 opt.Section = "MESSAGES_TOP";
             });
-            
+
             return;
         }
 
-        var scheduler = await SchedulerFactory.GetScheduler();
-
         var jobType = Enum.Parse<JobTypes>(_selectedJobType);
-
-        var jobBuilder = jobType switch
-        {
-            JobTypes.StartContainer => JobBuilder.Create<StartContainerJob>()
-                .WithIdentity(StartContainerJob.Key)
-                .WithDescription(StartContainerJob.Description),
-            JobTypes.StopContainer => JobBuilder.Create<StopContainerJob>()
-                .WithIdentity(StopContainerJob.Key)
-                .WithDescription(StopContainerJob.Description),
-            _ => throw new ArgumentOutOfRangeException()
-        };
         
+        var jobBuilder = JobBuilderFactory.For(jobType);
+
         var job = jobBuilder
             .UsingJobData(JobConstants.ContainerName, _containers[_selectedContainerId])
             .UsingJobData(JobConstants.ContainerId, _selectedContainerId)
             .UsingJobData(JobConstants.Cron, _cron)
+            .UsingJobData(JobConstants.Type, jobType.ToString())
             .StoreDurably()
             .DisallowConcurrentExecution()
             .Build();
@@ -137,15 +132,32 @@ public partial class Schedule
             .WithCronSchedule(_cron)
             .Build();
 
-        _scheduleEntries.Add(new ScheduleEntry(
+        var scheduleEntry = new ScheduleEntry(
             _scheduleEntries.Count + 1,
             job.Key,
             _containers[_selectedContainerId],
             job.Description!,
             _cron,
-            trigger.GetNextFireTimeUtc().ToLocalTime()));
+            jobType,
+            trigger.GetNextFireTimeUtc().ToLocalTime());
+        
+        if (_scheduleEntries.Any(se => se.Value.SameConfiguration(scheduleEntry)))
+        {
+            await Messages.ShowMessageBarAsync(opt =>
+            {
+                opt.Intent = MessageIntent.Warning;
+                opt.Timeout = 5000;
+                opt.Body = "An entry with these parameters already exists";
+                opt.Title = "Validation:";
+                opt.Section = "MESSAGES_TOP";
+            });
 
-        await scheduler.ScheduleJob(job, [trigger], replace: true);
+            return;
+        }
+
+        _scheduleEntries.Add(job.Key.Name, scheduleEntry);
+
+        await _scheduler.ScheduleJob(job, [trigger], replace: true);
 
         await _grid.RefreshDataAsync();
     }
@@ -157,17 +169,18 @@ public partial class Schedule
 
     private async Task DeleteAsync(ScheduleEntry entry)
     {
-        var scheduler = await SchedulerFactory.GetScheduler();
+        await _scheduler.DeleteJob(entry.Key);
 
-        await scheduler.DeleteJob(entry.Key);
-
-        _scheduleEntries.Remove(entry);
+        _scheduleEntries.Remove(entry.Key.Name);
 
         _index = 0;
 
-        _scheduleEntries = _scheduleEntries
-            .Select(se => se with { Index = ++_index })
-            .ToList();
+        var scheduleEntries = _scheduleEntries.Values.ToArray();
+
+        foreach (var scheduleEntry in scheduleEntries)
+        {
+            _scheduleEntries[scheduleEntry.Key.Name] = scheduleEntry with { Index = ++_index };
+        }
 
         await _grid.RefreshDataAsync();
     }
@@ -178,5 +191,14 @@ public partial class Schedule
         string ContainerName,
         string Description,
         string Cron,
-        DateTimeOffset? NextFireTime);
+        JobTypes Type,
+        DateTimeOffset? NextFireTime)
+    {
+        public bool SameConfiguration(ScheduleEntry anotherEntry)
+        {
+            return ContainerName == anotherEntry.ContainerName &&
+                   Cron == anotherEntry.Cron &&
+                   Type == anotherEntry.Type;
+        }
+    }
 }

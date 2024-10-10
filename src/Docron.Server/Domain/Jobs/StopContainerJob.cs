@@ -1,15 +1,12 @@
 ﻿using Docker.DotNet;
 using Docker.DotNet.Models;
-using Docron.Server.Domain;
 using Quartz;
 
-namespace Docron.Server.Jobs;
+namespace Docron.Server.Domain.Jobs;
 
-public sealed class StartContainerJob(IDockerClient dockerClient, ILogger<StartContainerJob> logger) : IJob
+public sealed class StopContainerJob(IDockerClient dockerClient, ILogger<StopContainerJob> logger) : IJob
 {
-    public const string Description = "Starts a container on schedule";
-    public static readonly JobKey Key = new("start-container", "containers");
-    public static readonly JobTypes JobType = JobTypes.StartContainer;
+    public const string Description = "Stops a container on schedule";
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -24,11 +21,11 @@ public sealed class StartContainerJob(IDockerClient dockerClient, ILogger<StartC
             var containerId = context.MergedJobDataMap.GetString(JobConstants.ContainerId);
             var containerName = context.MergedJobDataMap.GetString(JobConstants.ContainerName);
 
-            logger.LogInformation("Starting a container {ContainerName}", containerName);
+            logger.LogInformation("Stopping a container {ContainerName}", containerName);
 
-            await dockerClient.Containers.StartContainerAsync(containerId, new ContainerStartParameters(), cancellationToken: context.CancellationToken);
+            await dockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters(), cancellationToken: context.CancellationToken);
             
-            logger.LogInformation("Container {ContainerName} has started", containerName);
+            logger.LogInformation("Container {ContainerName} has stopped", containerName);
         }
         catch (Exception ex)
         {

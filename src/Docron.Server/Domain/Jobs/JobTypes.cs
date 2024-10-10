@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Docron.Server.Domain;
+namespace Docron.Server.Domain.Jobs;
 
 public enum JobTypes
 {
