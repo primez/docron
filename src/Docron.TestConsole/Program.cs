@@ -1,7 +1,7 @@
 ﻿using Docker.DotNet;
 using Docker.DotNet.Models;
 
-var connection = Environment.GetEnvironmentVariable("Connection");
+var connection = Environment.GetEnvironmentVariable("DockerConnection");
 
 Console.WriteLine($"Using the connection: {connection}");
 

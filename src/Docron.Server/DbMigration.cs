@@ -6,7 +6,8 @@ public sealed class DbMigration(
     ILogger<DbMigration> logger,
     IConfiguration configuration)
 {
-    private const string FileName = @"DbScripts\tables_sqlite.sql";
+    private const string FolderName = "DbScripts";
+    private const string FileName = "tables_sqlite.sql";
 
     public void Migrate()
     {
@@ -19,9 +20,9 @@ public sealed class DbMigration(
             logger.LogInformation("The migration was applied before");
             return;
         }
-        
-        // Read the SQL script from the file
-        var script = File.ReadAllText(FileName);
+
+        var path = Path.Combine(FolderName, FileName);
+        var script = File.ReadAllText(path);
         
         using var command = new SqliteCommand(script, connection);
         command.ExecuteNonQuery();

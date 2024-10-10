@@ -24,6 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DbScripts\" />
+    <None Update="DbScripts\tables_sqlite.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

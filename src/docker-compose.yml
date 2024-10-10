@@ -1,11 +1,27 @@
 ﻿services:
   docron.testconsole:
     image: docron.testconsole
+    container_name: docron-testconsole
     user: root # only for development
     build:
       context: .
       dockerfile: Docron.TestConsole/Dockerfile
     environment:
-      - Connection=unix:///var/run/docker.sock
+      - DockerConnection=unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  docron.server:
+    image: docron.server
+    container_name: docron
+    user: root # only for development
+    build:
+      context: .
+      dockerfile: Docron.Server/Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - DockerConnection=unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    
