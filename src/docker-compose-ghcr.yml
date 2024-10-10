@@ -1,6 +1,6 @@
 ﻿services:
   docron.server:
-    image: ghcr.io/primez/docron:main
+    image: ghcr.io/primez/docron:latest
     container_name: docron-ghcr
     user: root # only for development
     ports:
