@@ -15,9 +15,6 @@
     image: docron.server
     container_name: docron
     user: root # only for development
-    build:
-      context: .
-      dockerfile: Docron.Server/Dockerfile
     ports:
       - 8080:8080
     environment:

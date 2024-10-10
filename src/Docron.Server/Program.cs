@@ -16,7 +16,9 @@ builder.Services.AddQuartz(opt =>
 {
     opt.UsePersistentStore(b =>
     {
-        b.UseMicrosoftSQLite(cOpt => { cOpt.ConnectionStringName = "Docron"; });
+        var connectionString = builder.Configuration.GetDbConnection();
+        
+        b.UseMicrosoftSQLite(cOpt => { cOpt.ConnectionString = connectionString!; });
         b.UseProperties = true;
         b.UseSystemTextJsonSerializer();
         b.PerformSchemaValidation = true;

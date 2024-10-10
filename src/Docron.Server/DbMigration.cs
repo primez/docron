@@ -11,7 +11,7 @@ public sealed class DbMigration(
 
     public void Migrate()
     {
-        var connectionString = configuration.GetConnectionString("Docron");
+        var connectionString = configuration.GetDbConnection();
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
 
