@@ -55,7 +55,7 @@ jobs:
         id: tags
         run: |
           date_tag=$(date -u +"%Y.%m.%d.${{ github.run_number }}")
-          echo "tags=latest,$date_tag" >> $GITHUB_ENV
+          echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$date_tag" >> $GITHUB_ENV
 
       # Step 6: Build and push Docker image
       - name: Build and push Docker image
