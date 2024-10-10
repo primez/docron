@@ -48,7 +48,11 @@ services:
 
 ### Screenshots
 Here are a few screenshots of the UI:
-- ![1](https://github.com/user-attachments/assets/b51ff834-8f64-4ecb-bd0a-2ad0863807fb)
-- ![2](https://github.com/user-attachments/assets/62e9ad64-03d9-454c-a453-c27ebac10c99)
-- ![3](https://github.com/user-attachments/assets/b71591e6-42d1-42b4-9d71-f4a68e450e61)
+- ![1](https://github.com/user-attachments/assets/4edb973a-2152-4386-8c98-c59564c2b862)
+- ![2](https://github.com/user-attachments/assets/c739571b-a0ec-4da8-a819-15095f1db7dc)
+- ![3](https://github.com/user-attachments/assets/860bd79b-0892-46fb-b658-8343cb47713b)
+
+
+
+
 
