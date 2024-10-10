@@ -1,77 +1,66 @@
-name: 'Build & push to ghcr.io'
-
+---
+name: Build & push to ghcr.io
 on:
   push:
-    branches: [ "main" ]
-    tags: [ 'v*.*.*' ]
+    branches:
+      - main
+    tags:
+      - v*.*.*
   pull_request:
-    branches: [ "main" ]
-
+    branches:
+      - main
 env:
-  # Use GitHub Container Registry
   REGISTRY: ghcr.io
-  # Repository name in the format <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  # Format for the date tag
   DATE_TAG: ${{ github.event.head_commit.timestamp }}
   BUILD_NUMBER: ${{ github.run_number }}
-
 jobs:
   build-and-deploy:
-    name: 'Build & push to ghcr.io'
+    name: Build & push to ghcr.io
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
-
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Step 2: Set up Docker BuildKit for multi-platform builds
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
-
-      # Step 3: Install cosign tool except on PRs
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226
       - name: Install cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
+        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20
         with:
-          cosign-release: 'v2.2.4'
-
-      # Step 4: Log into GitHub Container Registry (GCR)
+          cosign-release: v2.2.4
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Step 5: Generate tags using a shell command
       - name: Generate image tags
         id: tags
-        run: |
+        run: >
           date_tag=$(date -u +"%Y.%m.%d.${{ github.run_number }}")
-          echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$date_tag" >> $GITHUB_ENV
 
-      # Step 6: Build and push Docker image
+          echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$date_tag" >> $GITHUB_ENV
       - name: Build and push Docker image
         id: build-and-push
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
         with:
-          context: ./src  # Specify the build context path
-          file: ./src/Docron.Server/Dockerfile  # Specify the full path to the Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}  # Push image only if not a PR
-          tags: ${{ env.tags }}  # Use generated tags
+          context: ./src
+          file: ./src/Docron.Server/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ env.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      	  annotations: '{"org.opencontainers.image.description": "Docron is a scheduling tool designed to automate the start and stop of Docker containers based on user-defined schedules. With a simple interface, it streamlines container management, ensuring that your applications run efficiently and only when needed."}'
-          cache-from: type=gha  # Use GitHub Actions cache for faster builds
+          annotations: '{"org.opencontainers.image.description": "Docron is a scheduling
+            tool designed to automate the start and stop of Docker containers
+            based on user-defined schedules. With a simple interface, it
+            streamlines container management, ensuring that your applications
+            run efficiently and only when needed."}'
+          cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # Step 7: Sign the published Docker image (only for non-PR events)
       - name: Sign the published Docker image
         if: ${{ github.event_name != 'pull_request' }}
         env:
