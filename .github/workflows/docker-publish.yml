@@ -58,7 +58,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
-          context: ./src/Docron.Server  # Specify the build context path
+          context: ./src  # Specify the build context path
           file: ./src/Docron.Server/Dockerfile  # Specify the full path to the Dockerfile
           push: ${{ github.event_name != 'pull_request' }}  # Push image only if not a PR
           tags: ${{ steps.meta.outputs.tags }}
