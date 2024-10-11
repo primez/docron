@@ -35,6 +35,8 @@ public partial class Schedule
 
     [Inject] private IMessageService Messages { get; set; } = default!;
 
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
         _scheduler = await SchedulerFactory.GetScheduler();
@@ -71,9 +73,18 @@ public partial class Schedule
             Limit = 50,
         });
 
+        var exclusions = Configuration.GetContainerExclusions();
+        
         foreach (var container in containers)
         {
-            _containers.Add(container.ID, container.Names.First().Remove(0, 1));
+            var name = container.Names.First().Remove(0, 1);
+
+            if (exclusions.Contains(name, StringComparer.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+            
+            _containers.Add(container.ID, name);
         }
     }
 

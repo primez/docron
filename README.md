@@ -19,6 +19,7 @@ docker run -d \
   -e DOCKER_CONNECTION=unix:///var/run/docker.sock \
   -e DB='Data Source=/data/docron.db;' \
   -e KEY_PATH='/data/keys' \
+  -e EXCLUDED_CONTAINERS="container-name1,container-name2" \
   -v /var/run/docker.sock:/var/run/docker.sock:ro \
   -v /<yourDBFolder>/:/data \
   ghcr.io/primez/docron:latest
@@ -37,6 +38,8 @@ services:
       - DOCKER_CONNECTION=unix:///var/run/docker.sock
       - DB=Data Source=/data/docron.db;
       - KEY_PATH=/data/keys
+      - EXCLUDED_CONTAINERS=
+        - container-name1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /<yourFolder>/:/data
@@ -47,6 +50,7 @@ services:
 - **ENV**: `DOCKER_CONNECTION` - This is the address that `Docron` will use to connect and gather information about containers for start/stop operations. If this parameter is not provided, it will default to a `Docker for Windows` environment.
 - **ENV**: `DB` - `Docron` uses `SQLite` to store schedules. To store the database in a mounted volume, provide this parameter. Otherwise, the database will be created inside the container.
 - **ENV**: `KEY_PATH` - `Docron` stores anti-forgery keys here. Any path within a container will work, but it is better to provide a path to a mounted volume.
+- **ENV**: `EXCLUDED_CONTAINERS` - an optional parameter to hide containers from `Docron`
 - **VOL**: `<yourDBFolder>` - If you want to persist the database between container updates, specify a host folder path to be mounted.
 
 ### Screenshots
