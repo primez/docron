@@ -21,11 +21,11 @@ public sealed class StopContainerJob(IDockerClient dockerClient, ILogger<StopCon
             var containerId = context.MergedJobDataMap.GetString(JobConstants.ContainerId);
             var containerName = context.MergedJobDataMap.GetString(JobConstants.ContainerName);
 
-            logger.LogInformation("Stopping a container {ContainerName}", containerName);
+            logger.LogInformation("Stopping a container \"{ContainerName}\"", containerName);
 
             await dockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters(), cancellationToken: context.CancellationToken);
             
-            logger.LogInformation("Container {ContainerName} has stopped", containerName);
+            logger.LogInformation("Container \"{ContainerName}\" has stopped", containerName);
         }
         catch (Exception ex)
         {

@@ -41,31 +41,34 @@
                  VerticalAlignment="VerticalAlignment.Center"
                  VerticalGap="40">
         <FluentCard>
-            <FluentStack Orientation="Orientation.Horizontal"
-                         HorizontalAlignment="HorizontalAlignment.Center">
-                <FluentSelect TOption="KeyValuePair<string, string>"
-                              Items="@_containers"
-                              Id="containers"
-                              Width="200px"
-                              Height="250px"
-                              Placeholder="Select container"
-                              OptionValue="@(c => c.Key)"
-                              OptionText="@(c => c.Value)"
-                              @bind-Value="@_selectedContainerId"/>
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentLabel Typo="Typography.H5">The cron value should use the container time, which now is @DateTime.Now.ToString("g")</FluentLabel>
+                <FluentStack Orientation="Orientation.Horizontal"
+                             HorizontalAlignment="HorizontalAlignment.Center">
+                    <FluentSelect TOption="KeyValuePair<string, string>"
+                                  Items="@_containers"
+                                  Id="containers"
+                                  Width="200px"
+                                  Height="250px"
+                                  Placeholder="Select container"
+                                  OptionValue="@(c => c.Key)"
+                                  OptionText="@(c => c.Value)"
+                                  @bind-Value="@_selectedContainerId"/>
 
-                <FluentSelect TOption="KeyValuePair<JobTypes, string>"
-                              Items="@_jobTypes"
-                              Id="jobTypes"
-                              Width="200px"
-                              Height="250px"
-                              Placeholder="Select type"
-                              OptionValue="@(t => t.Key.ToString())"
-                              OptionText="@(t => t.Value)"
-                              @bind-Value="@_selectedJobType"/>
+                    <FluentSelect TOption="KeyValuePair<JobTypes, string>"
+                                  Items="@_jobTypes"
+                                  Id="jobTypes"
+                                  Width="200px"
+                                  Height="250px"
+                                  Placeholder="Select type"
+                                  OptionValue="@(t => t.Key.ToString())"
+                                  OptionText="@(t => t.Value)"
+                                  @bind-Value="@_selectedJobType"/>
 
-                <FluentTextField @bind-Value="_cron" Maxlength="20" Placeholder="Enter cron expression, e.g. 0 0 1 * * ?" Style="width: 250px"></FluentTextField>
+                    <FluentTextField @bind-Value="_cron" Maxlength="20" Placeholder="Enter cron expression, e.g. 0 0 1 * * ?" Style="width: 250px"></FluentTextField>
 
-                <FluentButton Appearance="Appearance.Accent" OnClick="@AddJobAsync">Add Schedule</FluentButton>
+                    <FluentButton Appearance="Appearance.Accent" OnClick="@AddJobAsync">Add Schedule</FluentButton>
+                </FluentStack>
             </FluentStack>
         </FluentCard>
         <FluentCard>

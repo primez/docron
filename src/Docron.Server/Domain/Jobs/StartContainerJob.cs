@@ -21,11 +21,11 @@ public sealed class StartContainerJob(IDockerClient dockerClient, ILogger<StartC
             var containerId = context.MergedJobDataMap.GetString(JobConstants.ContainerId);
             var containerName = context.MergedJobDataMap.GetString(JobConstants.ContainerName);
 
-            logger.LogInformation("Starting a container {ContainerName}", containerName);
+            logger.LogInformation("Starting a container \"{ContainerName}\"", containerName);
 
             await dockerClient.Containers.StartContainerAsync(containerId, new ContainerStartParameters(), cancellationToken: context.CancellationToken);
             
-            logger.LogInformation("Container {ContainerName} has started", containerName);
+            logger.LogInformation("Container \"{ContainerName}\" has started", containerName);
         }
         catch (Exception ex)
         {
