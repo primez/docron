@@ -1,9 +1,8 @@
 ﻿# Use the ASP.NET Core Runtime image as the base
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
-LABEL org.opencontainers.image.description="Docron is a scheduling tool designed to automate the start and stop of Docker containers based on user-defined schedules. With a simple interface, it streamlines container management."
+LABEL "org.opencontainers.image.description"="Docron is a scheduling tool designed to automate the start and stop of Docker containers based on user-defined schedules. With a simple interface, it streamlines container management."
 
 # Use the SDK image for building the application
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
