@@ -17,6 +17,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10"/>
         <PackageReference Include="Docker.DotNet" Version="3.125.15"/>
         <PackageReference Include="Quartz.AspNetCore" Version="3.13.0"/>
+        <PackageReference Include="Quartz.Plugins.TimeZoneConverter" Version="3.13.0" />
         <PackageReference Include="Quartz.Serialization.SystemTextJson" Version="3.13.0"/>
         <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
         <PackageReference Include="MiniGuid" Version="1.1.3" />

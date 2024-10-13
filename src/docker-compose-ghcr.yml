@@ -1,5 +1,5 @@
 ﻿services:
-  docron.server:
+  docron:
     image: ghcr.io/primez/docron:latest
     container_name: docron-ghcr
     user: root # only for development
@@ -13,5 +13,5 @@
           - one-node-mongo
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /mnt/d/Temp/sqlite/:/data
+      - /d/Temp/sqlite/:/data
     

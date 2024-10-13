@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddQuartz(opt =>
 {
+    opt.UseTimeZoneConverter();
     opt.UsePersistentStore(b =>
     {
         var connectionString = builder.Configuration.GetDbConnection();

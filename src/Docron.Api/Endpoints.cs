@@ -5,6 +5,7 @@ using Docron.Common.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
 using Quartz.Impl.Matchers;
+using TimeZoneConverter;
 
 namespace Docron.Api;
 
@@ -129,9 +130,11 @@ public static class Endpoints
             .DisallowConcurrentExecution()
             .Build();
 
+        var timeZone = TZConvert.GetTimeZoneInfo(request.TimeZoneId);
+
         var trigger = TriggerBuilder.Create()
             .WithIdentity(job.Key.Name, job.Key.Group)
-            .WithCronSchedule(request.Cron, b => b.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById(request.TimeZoneId)))
+            .WithCronSchedule(request.Cron, b => b.InTimeZone(timeZone))
             .Build();
 
         await scheduler.ScheduleJob(job, [trigger], replace: true);
