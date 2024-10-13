@@ -42,7 +42,7 @@
                  VerticalGap="40">
         <FluentCard>
             <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
-                <FluentLabel Typo="Typography.H5">The cron value should use the container time, which now is @DateTime.Now.ToString("g")</FluentLabel>
+                <FluentLabel Typo="Typography.H5">The cron value will use the time of your browser, which now is @DateTime.Now.ToString("g")</FluentLabel>
                 <FluentStack Orientation="Orientation.Horizontal"
                              HorizontalAlignment="HorizontalAlignment.Center">
                     <FluentSelect TOption="KeyValuePair<string, string>"
@@ -73,8 +73,7 @@
         </FluentCard>
         <FluentCard>
             <FluentDataGrid Items="_scheduleEntriesQueryable"
-                            AutoFit="true"
-                            @ref="_grid">
+                            AutoFit="true">
                 <PropertyColumn Property="@(se => se.Index)" Title="#" Style="padding-top: 10px"></PropertyColumn>
                 <PropertyColumn Property="@(se => se.ContainerName)" Title="Container" Style="padding-top: 10px"></PropertyColumn>
                 <PropertyColumn Property="@(se => se.Description)" Title="Description" Tooltip="true" Style="padding-top: 10px"></PropertyColumn>

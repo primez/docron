@@ -7,14 +7,14 @@ using Docron.UI.Api;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Extensions;
+using Refit;
 
 namespace Docron.UI.Pages;
 
 public partial class Schedule
 {
-    private Dictionary<string, ScheduleEntry> _scheduleEntries = [];
+    private readonly Dictionary<string, ScheduleEntry> _scheduleEntries = [];
     private IQueryable<ScheduleEntry> _scheduleEntriesQueryable = default!;
-    private FluentDataGrid<ScheduleEntry> _grid = default!;
     private int _index;
     
     private readonly Dictionary<string, string> _containers = [];
@@ -31,7 +31,7 @@ public partial class Schedule
     [Inject] private IApiClient ApiClient { get; set; } = default!;
     
     [Inject] private IMessageService Messages { get; set; } = default!;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var jobsResponse = await ApiClient.GetJobsAsync();
@@ -99,16 +99,15 @@ public partial class Schedule
             ContainerId = _selectedContainerId,
             ContainerName = containerName,
             Cron = _cron,
-            JobType = jobType
+            JobType = jobType.ToString(),
+            TimeZoneId = TimeZoneInfo.Local.Id,
         });
 
         if (result.StatusCode == HttpStatusCode.BadRequest)
         {
-            var message = result.Error!.Message;
-            var validationErrors = JsonSerializer.Deserialize<Dictionary<string, string[]>>(message)!;
+            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(result.Error!.Content!, ApiClientJsonSerializerSettings.Instance)!;
 
-            var errors = validationErrors["Validation"];
-            var validationMessage = string.Join(", ", errors);
+            var validationMessage = string.Join("; ", problemDetails.Errors.SelectMany(e => e.Value));
             
             await Messages.ShowMessageBarAsync(opt =>
             {
@@ -144,11 +143,9 @@ public partial class Schedule
 
         if (result.StatusCode == HttpStatusCode.BadRequest)
         {
-            var message = result.Error!.Message;
-            var validationErrors = JsonSerializer.Deserialize<Dictionary<string, string[]>>(message)!;
+            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(result.Error!.Content!, ApiClientJsonSerializerSettings.Instance)!;
 
-            var errors = validationErrors["Validation"];
-            var validationMessage = string.Join(", ", errors);
+            var validationMessage = string.Join("; ", problemDetails.Errors.SelectMany(e => e.Value));
             
             await Messages.ShowMessageBarAsync(opt =>
             {
@@ -185,6 +182,8 @@ public partial class Schedule
         
         _scheduleEntries.Clear();
 
+        _index = 0;
+        
         foreach (var job in jobs)
         {
             _scheduleEntries.Add(job.Id, new ScheduleEntry(

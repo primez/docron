@@ -10,5 +10,6 @@ public sealed class CreateJobRecordDto
 
     public required string Cron { get; init; }
 
-    public required JobTypes JobType { get; init; }
+    public required string JobType { get; init; }
+    public required string TimeZoneId { get; set; }
 }

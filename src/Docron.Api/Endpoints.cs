@@ -116,21 +116,22 @@ public static class Endpoints
                 {"Validation", [e.Message]},
             });
         }
-        
-        var jobBuilder = JobBuilderFactory.For(request.JobType);
+
+        var jobType = Enum.Parse<JobTypes>(request.JobType);
+        var jobBuilder = JobBuilderFactory.For(jobType);
 
         var job = jobBuilder
             .UsingJobData(JobConstants.ContainerName, request.ContainerName)
             .UsingJobData(JobConstants.ContainerId, request.ContainerId)
             .UsingJobData(JobConstants.Cron, request.Cron)
-            .UsingJobData(JobConstants.Type, request.JobType.ToString())
+            .UsingJobData(JobConstants.Type, request.JobType)
             .StoreDurably()
             .DisallowConcurrentExecution()
             .Build();
 
         var trigger = TriggerBuilder.Create()
             .WithIdentity(job.Key.Name, job.Key.Group)
-            .WithCronSchedule(request.Cron)
+            .WithCronSchedule(request.Cron, b => b.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById(request.TimeZoneId)))
             .Build();
 
         await scheduler.ScheduleJob(job, [trigger], replace: true);
