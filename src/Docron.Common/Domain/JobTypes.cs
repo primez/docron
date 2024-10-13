@@ -10,4 +10,6 @@ public enum JobTypes
     StartContainer = 1,
     [Display(Name = "Stop container")]
     StopContainer = 2,
+    [Display(Name = "Restart container")]
+    RestartContainer = 3,
 }

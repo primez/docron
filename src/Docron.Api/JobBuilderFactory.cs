@@ -21,6 +21,10 @@ public static class JobBuilderFactory
                 return JobBuilder.Create<StopContainerJob>()
                     .WithIdentity(jobKey)
                     .WithDescription(StopContainerJob.Description);
+            case JobTypes.RestartContainer:
+                return JobBuilder.Create<RestartContainerJob>()
+                    .WithIdentity(jobKey)
+                    .WithDescription(RestartContainerJob.Description);
             case JobTypes.None:
             default:
                 throw new ArgumentOutOfRangeException(nameof(jobType), jobType, null);

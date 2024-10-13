@@ -5,9 +5,9 @@ using Quartz;
 
 namespace Docron.Api.Jobs;
 
-public sealed class StartContainerJob(IDockerClient dockerClient, ILogger<StartContainerJob> logger) : IJob
+public sealed class RestartContainerJob(IDockerClient dockerClient, ILogger<StopContainerJob> logger) : IJob
 {
-    public const string Description = "Starts a container on schedule";
+    public const string Description = "Restarts a container on schedule";
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -17,19 +17,19 @@ public sealed class StartContainerJob(IDockerClient dockerClient, ILogger<StartC
             return;
         }
 
-        try 
+        try
         {
             var containerId = context.MergedJobDataMap.GetString(JobConstants.ContainerId);
             var containerName = context.MergedJobDataMap.GetString(JobConstants.ContainerName);
 
-            logger.LogInformation("Starting a container \"{ContainerName}\"", containerName);
+            logger.LogInformation("Restarting a container \"{ContainerName}\"", containerName);
 
-            await dockerClient.Containers.StartContainerAsync(
+            await dockerClient.Containers.RestartContainerAsync(
                 containerId,
-                new ContainerStartParameters(),
+                new ContainerRestartParameters { WaitBeforeKillSeconds = 60 },
                 cancellationToken: context.CancellationToken);
-            
-            logger.LogInformation("Container \"{ContainerName}\" has started", containerName);
+
+            logger.LogInformation("Container \"{ContainerName}\" has restarted", containerName);
         }
         catch (Exception ex)
         {
