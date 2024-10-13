@@ -14,6 +14,11 @@ public static class Endpoints
     public static IEndpointRouteBuilder MapApi(this IEndpointRouteBuilder endpoints)
     {
         endpoints
+            .MapGet("/version", GetVersion)
+            .Produces(200)
+            .ProducesValidationProblem();
+        
+        endpoints
             .MapGet("/jobs", GetJobsAsync)
             .Produces(200)
             .ProducesValidationProblem();
@@ -34,6 +39,13 @@ public static class Endpoints
         return endpoints;
     }
 
+    private static IResult GetVersion(IConfiguration configuration)
+    {
+        var version = configuration.GetValue<string>("Version")!;
+
+        return Results.Ok(version);
+    }
+    
     private static async Task<IResult> GetJobsAsync(ISchedulerFactory schedulerFactory)
     {
         var scheduler = await schedulerFactory.GetScheduler();

@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using Docron.UI.Api
+@inherits LayoutComponentBase
 
 <FluentDesignTheme Mode="DesignThemeModes.System"></FluentDesignTheme>
 
@@ -33,10 +34,12 @@
 {
     private string _version = string.Empty;
     
-    [Inject] IConfiguration Configuration { get; set; } = default!;
+    [Inject] IApiClient ApiClient { get; set; } = default!;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        _version = Configuration.GetValue<string>("Version")!;
+        var result = await ApiClient.GetVersionAsync();
+
+        _version = result.Content!.Trim('"');
     }
 }

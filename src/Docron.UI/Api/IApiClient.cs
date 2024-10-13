@@ -5,6 +5,9 @@ namespace Docron.UI.Api;
 
 public interface IApiClient
 {
+    [Get("/version")]
+    Task<IApiResponse<string>> GetVersionAsync();
+    
     [Get("/jobs")]
     Task<IApiResponse<IReadOnlyCollection<JobRecordDto>>> GetJobsAsync();
 
