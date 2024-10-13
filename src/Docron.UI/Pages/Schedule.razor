@@ -81,7 +81,7 @@
                 <PropertyColumn Property="@(se => se.NextRun)" Title="Next execution" Style="padding-top: 10px"></PropertyColumn>
                 <TemplateColumn Title="Actions" Align="@Align.End">
                     @* <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@EditAsync" Appearance="Appearance.Accent"/> *@
-                    <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(async _ => await DeleteAsync(context))" Appearance="Appearance.Accent"/>
+                    <FluentButton aria-label="Delete item" OnClick="@(async _ => await DeleteAsync(context))" Appearance="Appearance.Accent">Delete</FluentButton>
                 </TemplateColumn>
             </FluentDataGrid>
         </FluentCard>
