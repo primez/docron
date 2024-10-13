@@ -81,7 +81,11 @@
                 <PropertyColumn Property="@(se => se.NextRun)" Title="Next execution" Style="padding-top: 10px"></PropertyColumn>
                 <TemplateColumn Title="Actions" Align="@Align.End">
                     @* <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@EditAsync" Appearance="Appearance.Accent"/> *@
-                    <FluentButton aria-label="Delete item" OnClick="@(async _ => await DeleteAsync(context))" Appearance="Appearance.Accent">Delete</FluentButton>
+                    <FluentButton aria-label="Delete item" OnClick="@(async _ => await DeleteAsync(context))" Appearance="Appearance.Accent">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 6h18v2H3V6zm2 3h14v12c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V9zm4 0v10h2V9H9zm4 0v10h2V9h-2zM7 2c-1.1 0-2 .9-2 2h14c0-1.1-.9-2-2-2H7z"/>
+                        </svg>
+                    </FluentButton>
                 </TemplateColumn>
             </FluentDataGrid>
         </FluentCard>
