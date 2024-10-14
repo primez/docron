@@ -3,32 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron.TestConsole", "Docron.TestConsole\Docron.TestConsole.csproj", "{513804DF-7177-4DD7-A0E8-491D95E32BCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Docron.TestConsole", "Docron.TestConsole\Docron.TestConsole.csproj", "{513804DF-7177-4DD7-A0E8-491D95E32BCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A201F179-AE5E-4443-AE36-9A0BD684C609}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
-		docker-compose-no-build.yml = docker-compose-no-build.yml
 		docker-compose-ghcr.yml = docker-compose-ghcr.yml
-		..\README.md = ..\README.md
+		docker-compose-no-build.yml = docker-compose-no-build.yml
+		docker-compose.yml = docker-compose.yml
 		..\.github\workflows\docker-publish.yml = ..\.github\workflows\docker-publish.yml
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron.Server", "Docron.Server\Docron.Server.csproj", "{50E36856-6488-48C5-A91F-45AD9A79A931}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Docron.Server", "Docron.Server\Docron.Server.csproj", "{50E36856-6488-48C5-A91F-45AD9A79A931}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron.UI", "Docron.UI\Docron.UI.csproj", "{85904F86-4DC3-42CF-AB9C-2395686B0A60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Docron.UI", "Docron.UI\Docron.UI.csproj", "{85904F86-4DC3-42CF-AB9C-2395686B0A60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron.Api", "Docron.Api\Docron.Api.csproj", "{FCF2BB2A-4916-4FB4-A389-087CF336CE1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Docron.Api", "Docron.Api\Docron.Api.csproj", "{FCF2BB2A-4916-4FB4-A389-087CF336CE1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron.Common", "Docron.Common\Docron.Common.csproj", "{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Docron.Common", "Docron.Common\Docron.Common.csproj", "{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron.Ssr", "Docron.Ssr\Docron.Ssr.csproj", "{B4395951-9251-45CC-BFF1-177AFE32CFE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{513804DF-7177-4DD7-A0E8-491D95E32BCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -51,5 +50,12 @@ Global
 		{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4395951-9251-45CC-BFF1-177AFE32CFE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4395951-9251-45CC-BFF1-177AFE32CFE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4395951-9251-45CC-BFF1-177AFE32CFE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4395951-9251-45CC-BFF1-177AFE32CFE4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
