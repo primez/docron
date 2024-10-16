@@ -96,7 +96,6 @@ public partial class Schedule
 
         var result = await ApiClient.CreateJobAsync(new CreateJobRecordDto
         {
-            ContainerId = _selectedContainerId,
             ContainerName = containerName,
             Cron = _cron,
             JobType = jobType.ToString(),
