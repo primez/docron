@@ -135,7 +135,6 @@ public static class Endpoints
 
         var job = jobBuilder
             .UsingJobData(JobConstants.ContainerName, request.ContainerName)
-            .UsingJobData(JobConstants.ContainerId, request.ContainerId)
             .UsingJobData(JobConstants.Cron, request.Cron)
             .UsingJobData(JobConstants.Type, request.JobType)
             .StoreDurably()

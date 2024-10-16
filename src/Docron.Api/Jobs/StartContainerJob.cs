@@ -19,13 +19,26 @@ public sealed class StartContainerJob(IDockerClient dockerClient, ILogger<StartC
 
         try 
         {
-            var containerId = context.MergedJobDataMap.GetString(JobConstants.ContainerId);
             var containerName = context.MergedJobDataMap.GetString(JobConstants.ContainerName);
 
             logger.LogInformation("Starting a container \"{ContainerName}\"", containerName);
 
+            var containers = await dockerClient.Containers
+                .ListContainersAsync(new ContainersListParameters
+                {
+                    All = true,
+                }, context.CancellationToken);
+
+            var targetContainer = containers.FirstOrDefault(c => c.Names.Any(cn => cn.Contains(containerName!)));
+
+            if (targetContainer == null)
+            {
+                logger.LogInformation("The container with the name \"{ContainerName}\" was not found", containerName);
+                return;
+            }
+            
             await dockerClient.Containers.StartContainerAsync(
-                containerId,
+                targetContainer.ID,
                 new ContainerStartParameters(),
                 cancellationToken: context.CancellationToken);
             
