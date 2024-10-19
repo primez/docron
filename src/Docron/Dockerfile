@@ -1,33 +1,30 @@
-﻿# Stage 1: Build the application
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
-# Install necessary dependencies in a single RUN statement to leverage Docker layer caching
-RUN apk add \
-    clang \
-    binutils \
-    musl-dev \
-    build-base \
-    zlib-static \
-    cmake \
-    openssl-dev \
-    openssl-libs-static \
-    openssl
-# Set the working directory
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 WORKDIR /app
-# Copy project files
-COPY Docron/Docron.csproj Docron/
-# Restore dependencies for the Docron project
-RUN dotnet restore --runtime linux-musl-x64 Docron/Docron.csproj
-# Copy the entire source code
-COPY . .
-# Set working directory to the Docron project
-WORKDIR /app/Docron
-# Publish the application in Release mode for linux-musl-x64 runtime without the app host
-RUN dotnet publish Docron.csproj -c Release -r linux-musl-x64 -o out
-
-# Stage 2: Create the runtime image using scratch for minimal size
-FROM scratch AS runtime
-WORKDIR /app
-COPY --from=build /app/Docron/out/ /app/
-ENV ASPNETCORE_URLS="http://+:8080"
 EXPOSE 8080
-ENTRYPOINT ["/app/Docron"]
+LABEL "org.opencontainers.image.description"="Docron is a scheduling tool designed to automate the start, stop and restart of Docker containers based on user-defined schedules. With a simple interface, it streamlines container management."
+# Required for Time Zone database lookups
+RUN apk add --no-cache tzdata
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["Docron/Docron.csproj", "Docron/"]
+RUN dotnet restore "Docron/Docron.csproj"
+COPY . .
+WORKDIR "/src/Docron"
+RUN dotnet build "Docron.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "Docron.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# Cleanup step to remove all runtimes except for linux-x64
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS cleanup
+WORKDIR /app
+COPY --from=publish /app/publish ./
+RUN find runtimes -mindepth 1 -maxdepth 1 ! -name 'linux-musl-x64' -exec rm -rf {} +
+
+FROM base AS final
+WORKDIR /app
+COPY --from=cleanup /app .
+ENTRYPOINT ["dotnet", "Docron.dll"]

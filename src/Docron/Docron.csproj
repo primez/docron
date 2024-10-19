@@ -4,31 +4,15 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <StaticallyLinked>true</StaticallyLinked>
-        <PublishAot>true</PublishAot>
-        <IlcDisableReflection>false</IlcDisableReflection>
         <InvariantGlobalization>true</InvariantGlobalization>
-        <StaticOpenSslLinking>true</StaticOpenSslLinking>
-        <StaticExecutable>true</StaticExecutable>
-        <StripSymbols>true</StripSymbols>
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
-        <RuntimeHostConfigurationOption Include="Switch.System.Reflection.Disabled.DoNotThrowForAssembly" Value="true" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Update="DbScripts\tables_sqlite.sql">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
     </ItemGroup>
     
     <ItemGroup>
@@ -44,6 +28,12 @@
         <PackageReference Include="Quartz.Serialization.SystemTextJson" Version="3.13.0"/>
         <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10"/>
         <PackageReference Include="MiniGuid" Version="1.1.3"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
