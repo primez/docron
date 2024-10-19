@@ -48,3 +48,21 @@
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /d/Temp/sqlite/:/data
     
+  docron:
+    image: docron
+    container_name: docron
+    build:
+      context: .
+      dockerfile: Docron/Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - DOCKER_CONNECTION=unix:///var/run/docker.sock
+      - DB=Data Source=/data/docron.db;
+      - KEY_PATH=/data/keys
+      - EXCLUDED_CONTAINERS=
+        - one-node-mongo
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /d/Temp/sqlite/:/data
+    

@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron.Api", "Docron.Api\Do
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron.Common", "Docron.Common\Docron.Common.csproj", "{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docron", "Docron\Docron.csproj", "{1F2A42E4-50AA-4A9A-94EE-3E9EDBD63434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,5 +53,9 @@ Global
 		{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA43E6DB-C71A-4DAC-A8A3-403FBF613259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F2A42E4-50AA-4A9A-94EE-3E9EDBD63434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F2A42E4-50AA-4A9A-94EE-3E9EDBD63434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F2A42E4-50AA-4A9A-94EE-3E9EDBD63434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F2A42E4-50AA-4A9A-94EE-3E9EDBD63434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
