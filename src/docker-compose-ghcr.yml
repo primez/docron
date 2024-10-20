@@ -1,8 +1,7 @@
 ﻿services:
   docron:
     image: ghcr.io/primez/docron:latest
-    container_name: docron-ghcr
-    user: root # only for development
+    container_name: docron
     ports:
       - 8080:8080
     environment:
@@ -10,7 +9,7 @@
       - DB=Data Source=/data/docron.db;
       - KEY_PATH=/data/keys
       - EXCLUDED_CONTAINERS=
-          - one-node-mongo
+        - one-node-mongo
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /d/Temp/sqlite/:/data

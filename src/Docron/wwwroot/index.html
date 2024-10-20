@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docron</title>
+    <link rel="stylesheet" href="css/milligram.min.css">
+    <script src="js/alpine.min.js" defer></script>
+    <style>
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0;
+            background-color: #036ac4;
+            color: #fff;
+        }
+
+        .hero {
+            display: flex;
+            align-items: center;
+        }
+
+        .icon {
+            width: 30px;
+            height: 32px;
+        }
+
+        .card {
+            border: 1px solid #e1e1e1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+            border-radius: 0.5rem;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            align-items: center;
+        }
+
+        .grid-section {
+            width: 100%;
+        }
+
+        .form-inline {
+            display: flex;
+            justify-content: space-evenly;
+            width: 100%;
+            gap: 2rem;
+            margin: 0;
+        }
+
+        .grid-header {
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        .button {
+            background-color: #036ac4;
+            border-color: #036ac4;
+            color: #fff;
+        }
+
+        .button-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        a {
+            color: #036ac4;
+        }
+
+        select {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 1rem center !important;
+            background-size: 2.5rem !important;
+            padding-right: 2.5rem !important;
+            border: 1px solid #ccc !important;
+        }
+
+        select:focus {
+            border-color: #036ac4 !important;
+            outline: none !important;
+            background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="blue"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 1rem center !important;
+            background-size: 2.5rem !important;
+            box-shadow: none !important;
+        }
+
+        select:hover,
+        select:active {
+            border-color: #036ac4 !important;
+            background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="blue"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 1rem center !important;
+            background-size: 2.5rem !important;
+            box-shadow: none !important;
+        }
+
+        input:focus {
+            border-color: #036ac4 !important;
+            outline: none !important;
+        }
+    </style>
+</head>
+<body x-data="appData()" x-init="init()" style="margin: 0">
+<header class="app-header">
+    <div class="hero">
+        <img src="logo-thick-sm.png" alt="Docron" class="icon" style="margin-left: 3rem">
+        <h2 style="margin: 0 0 0 0.5rem;">Docron</h2>
+    </div>
+    <strong><span x-text="version" style="margin-right: 3rem"></span></strong>
+</header>
+<main class="container">
+    <!-- Form Section -->
+    <div class="form-section card">
+        <h5 style="margin-bottom: 0.3rem">The cron value will use the time of your browser, which now is <span
+                x-text="new Date().toLocaleString()"></span></h5>
+        <h5>You can use <a href="https://elmah.io/tools/cron-parser/#0_0_1_*_*_?" target="_blank">the elmah.io
+            website</a> to generate correct cron expressions</h5>
+        <form @submit.prevent="addJob()" class="form-inline">
+            <select x-model="newJob.containerName" @change="clearValidationMessage()">
+                <option value="">Select container</option>
+                <template x-for="container in containers" :key="container.id">
+                    <option :value="container.name" x-text="container.name"></option>
+                </template>
+            </select>
+            <select x-model="newJob.jobType" @change="clearValidationMessage()">
+                <option value="">Select type</option>
+                <template x-for="jobType in jobTypes" :key="jobType.key">
+                    <option :value="jobType.key" x-text="jobType.value"></option>
+                </template>
+            </select>
+            <input type="text" placeholder="Enter cron expression, e.g. 0 0 1 * * ?" x-model="newJob.cron"
+                   @input="clearValidationMessage()">
+            <button type="submit" class="button">Add Schedule</button>
+        </form>
+        <div class="error-message" x-text="validationMessage" x-show="validationMessage"></div>
+    </div>
+
+    <!-- Grid Section -->
+    <div class="card">
+        <table class="grid-section">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Container</th>
+                <th>Description</th>
+                <th>Cron</th>
+                <th>Next execution</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <template x-for="(entry, index) in scheduledEntries" :key="entry.id">
+                <tr>
+                    <td x-text="index + 1"></td>
+                    <td x-text="entry.containerName"></td>
+                    <td x-text="entry.description"></td>
+                    <td x-text="entry.cron"></td>
+                    <td x-text="entry.nextRun ? new Date(entry.nextRun).toLocaleString() : 'N/A'"></td>
+                    <td style="display: flex; justify-content: center">
+                        <button @click="deleteItem(entry.id)" class="button button-icon" style="width: 50%; padding:0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    function appData() {
+        return {
+            version: '',
+            scheduledEntries: [],
+            containers: [],
+            jobTypes: [],
+            newJob: {
+                containerName: '',
+                jobType: '',
+                cron: ''
+            },
+            validationMessage: '',
+            fetchVersion() {
+                fetch('/version')
+                    .then(response => {
+                        if (response.status === 500) {
+                            throw new Error('An unexpected error occurred. Please try again later');
+                        }
+                        return response.text();
+                    })
+                    .then(version => {
+                        this.version = `Version: ${version.replace(/^"|"$/g, '')}`;
+                    })
+                    .catch(error => {
+                        this.validationMessage = error.message;
+                    });
+            },
+            fetchJobTypes() {
+                fetch('/jobs/types')
+                    .then(response => {
+                        if (response.status === 500) {
+                            throw new Error('An unexpected error occurred. Please try again later');
+                        }
+                        return response.json();
+                    })
+                    .then(jobTypes => {
+                        this.jobTypes = jobTypes;
+                    })
+                    .catch(error => {
+                        this.validationMessage = error.message;
+                    });
+            },
+            fetchContainers() {
+                fetch('/containers')
+                    .then(response => {
+                        if (response.status === 500) {
+                            throw new Error('An unexpected error occurred. Please try again later');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        this.containers = data;
+                    })
+                    .catch(error => {
+                        this.validationMessage = error.message;
+                    });
+            },
+            fetchJobs() {
+                fetch('/jobs')
+                    .then(response => {
+                        if (response.status === 500) {
+                            throw new Error('An unexpected error occurred. Please try again later');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        this.scheduledEntries = data;
+                    })
+                    .catch(error => {
+                        this.validationMessage = error.message;
+                    });
+            },
+            addJob() {
+                if (!this.validateForm()) {
+                    return;
+                }
+
+                fetch('/jobs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ...this.newJob,
+                        timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    })
+                }).then(response => {
+                    if (response.status === 400) {
+                        response.json().then(problemDetails => {
+                            this.validationMessage = problemDetails.errors
+                                ? Object.values(problemDetails.errors).flat().join('; ')
+                                : 'Invalid request';
+                        });
+                    } else if (response.status === 500) {
+                        this.validationMessage = 'An unexpected error occurred. Please try again later';
+                    } else {
+                        this.fetchJobs();
+                        this.newJob = {
+                            containerName: '',
+                            jobType: '',
+                            cron: ''
+                        };
+                    }
+                }).catch(() => {
+                    this.validationMessage = 'An unexpected error occurred. Please try again later';
+                });
+            },
+            deleteItem(id) {
+                fetch(`/jobs/${id}`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.status === 500) {
+                        this.validationMessage = 'An unexpected error occurred. Please try again later';
+                    } else {
+                        this.fetchJobs();
+                    }
+                }).catch(() => {
+                    this.validationMessage = 'An unexpected error occurred. Please try again later';
+                });
+            },
+            validateForm() {
+                const {containerName, jobType, cron} = this.newJob;
+
+                if (!containerName || !jobType || !cron) {
+                    this.validationMessage = 'All fields are required';
+                    return false;
+                }
+
+                const jobTypeNumber = +jobType;
+
+                const isDuplicate = this.scheduledEntries.some(entry =>
+                    entry.containerName === containerName &&
+                    entry.jobType === jobTypeNumber &&
+                    entry.cron === cron
+                );
+
+                if (isDuplicate) {
+                    this.validationMessage = 'This schedule already exists';
+                    return false;
+                }
+
+                return true;
+            },
+            clearValidationMessage() {
+                this.validationMessage = '';
+            },
+            init() {
+                this.fetchVersion();
+                this.fetchJobTypes();
+                this.fetchContainers();
+                this.fetchJobs();
+            }
+        }
+    }
+</script>
+</body>
+</html>
