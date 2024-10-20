@@ -23,8 +23,8 @@
         }
 
         .icon {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 32px;
         }
 
         .card {
@@ -69,22 +69,53 @@
             border-color: #036ac4;
             color: #fff;
         }
-        
+
         .button-icon {
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        
+
         a {
             color: #036ac4;
+        }
+
+        select {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 1rem center !important;
+            background-size: 2.5rem !important;
+            padding-right: 2.5rem !important;
+            border: 1px solid #ccc !important;
+        }
+
+        select:focus {
+            border-color: #036ac4 !important;
+            outline: none !important;
+            background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="blue"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 1rem center !important;
+            background-size: 2.5rem !important;
+            box-shadow: none !important;
+        }
+
+        select:hover,
+        select:active {
+            border-color: #036ac4 !important;
+            background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="blue"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 1rem center !important;
+            background-size: 2.5rem !important;
+            box-shadow: none !important;
+        }
+
+        input:focus {
+            border-color: #036ac4 !important;
+            outline: none !important;
         }
     </style>
 </head>
 <body x-data="appData()" x-init="init()" style="margin: 0">
 <header class="app-header">
     <div class="hero">
-        <img src="lg-w.svg" alt="Docron" class="icon" style="margin-left: 3rem">
+        <img src="logo-thick-sm.png" alt="Docron" class="icon" style="margin-left: 3rem">
         <h2 style="margin: 0 0 0 0.5rem;">Docron</h2>
     </div>
     <strong><span x-text="version" style="margin-right: 3rem"></span></strong>

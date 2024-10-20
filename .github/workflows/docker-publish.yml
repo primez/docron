@@ -53,14 +53,14 @@ jobs:
       - name: Update appsettings.json with date_tag
         run: |
           # Update the date_tag in appsettings.json
-          jq --arg date_tag "${{ env.date_tag }}" '.Version = $date_tag' ./src/Docron.Server/appsettings.json > ./src/Docron.Server/appsettings.tmp.json && mv ./src/Docron.Server/appsettings.tmp.json ./src/Docron.Server/appsettings.json
+          jq --arg date_tag "${{ env.date_tag }}" '.Version = $date_tag' ./src/Docron/appsettings.json > ./src/Docron/appsettings.tmp.json && mv ./src/Docron/appsettings.tmp.json ./src/Docron/appsettings.json
 
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v6
         with:
           context: ./src
-          file: ./src/Docron.Api/Dockerfile
+          file: ./src/Docron/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.tags }}
           labels: ${{ steps.meta.outputs.labels }}
